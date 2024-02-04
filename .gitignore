@@ -1,0 +1,5 @@
+cmd/ha-cadinho-para-todos/ha-cadinho-para-todos
+.DS_Store
+.jj
+*.sqlite
+cmd/ha-cadinho-para-todos/demo.sqlite
