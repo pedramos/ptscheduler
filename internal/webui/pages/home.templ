@@ -1,0 +1,155 @@
+package pages
+
+import (
+	"time"
+	"fmt"
+	"plramos.win/ptscheduler/internal/datamodel"
+)
+
+type Home struct {
+	header templ.Component
+	body   templ.Component
+}
+
+func NewHome(name string, trainDates []time.Time, availabilities []datamodel.AvailabilityPeriod) Home {
+	return Home{
+		header: homeHeader(),
+		body:   homeBody(name, trainDates, availabilities),
+	}
+}
+
+func (p Home) Header() templ.Component { return p.header }
+func (p Home) Body() templ.Component   { return p.body }
+
+func weekdayToPT(wd time.Weekday) string {
+	switch wd {
+	case time.Sunday:
+		return "Domingo"
+	case time.Monday:
+		return "Segunda-Feira"
+	case time.Tuesday:
+		return "Terça-Feira"
+	case time.Wednesday:
+		return "Quarta-Feira"
+	case time.Thursday:
+		return "Quinta-Feira"
+	case time.Friday:
+		return "Sexta-Feira"
+	case time.Saturday:
+		return "Sábado"
+	default:
+		return ""
+	}
+}
+
+func monthToPT(m time.Month) string {
+	switch m {
+	case time.January:
+		return "Janeiro" 
+	case time.February:
+		return "Fevereiro"
+	case time.March:
+		return "Março"
+	case time.April:
+		return "Abril"
+	case time.May:
+		return "Maio"
+	case time.June:
+		return "Junho"
+	case time.July:
+		return "Julho"
+	case time.August:
+		return "Agosto"
+	case time.September:
+		return "Setembro"
+	case time.October:
+		return "Outubro"
+	case time.November:
+		return "Novembro"
+	case time.December:
+		return "Dezembro"
+	default:
+		return ""
+	}
+}
+
+templ homeHeader() {
+}
+
+templ homeBody(name string, dates []time.Time, availabilities []datamodel.AvailabilityPeriod) {
+	<div class="h-screen flex items-center flex-col space-y-5" >
+	<h1 class="text-2xl" >{ name }</h1>
+	@HomeTrainningCards(name, dates)
+	@HomeAvailabilityCards(availabilities)
+	</div>
+}
+
+templ HomeTrainningCards(name string, dates []time.Time) {
+	<div class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+		<div class="flex items-center justify-between mb-4">
+			<h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">Treinos Marcados</h5>
+			<a href="#" class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
+				Mudar
+			</a>
+		</div>
+		<div class="flow-root">
+			<ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+				for _, date := range dates {
+					<li class="py-3 sm:py-4">
+						<div class="flex items-center">
+							<div class="flex-shrink-0">
+								<img class="w-8 h-8 rounded-full" src="/docs/images/people/profile-picture-1.jpg" alt="Neil image"/>
+							</div>
+							<div class="flex-1 text-left items-center text-base font-medium text-gray-900 dark:text-white">
+								{ fmt.Sprintf("%d - %s", date.Day(), monthToPT(date.Month())) }
+							</div>
+							<div class="flex-inline min-w-0 ms-4">
+								<p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+									{ weekdayToPT(date.Weekday()) }
+								</p>
+								<p class="text-sm text-gray-500 truncate dark:text-gray-400">
+									{ fmt.Sprintf("%02d:%02d", date.Hour(), date.Minute()) }
+								</p>
+							</div>
+						</div>
+					</li>
+				}
+			</ul>
+		</div>
+	</div>
+}
+
+templ HomeAvailabilityCards(availabilities []datamodel.AvailabilityPeriod) {
+	<div class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+		<div class="flex items-center justify-between mb-4">
+			<h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white">Disponibilidade</h5>
+			<a href="#" class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">
+				Mudar
+			</a>
+		</div>
+		<div class="flow-root">
+			<ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
+				for _, avail := range availabilities {
+					<li class="py-3 sm:py-4">
+						<div class="flex items-center">
+							<div class="flex-shrink-0">
+								<img class="w-8 h-8 rounded-full" src="/docs/images/people/profile-picture-1.jpg" alt="Neil image"/>
+							</div>
+							<div class="flex-1 text-left items-center text-base font-medium text-gray-900 dark:text-white">
+								{ fmt.Sprintf("%d - %s", avail.Start.Day(), monthToPT(avail.Start.Month())) }
+							</div>
+							<div class="flex-inline min-w-0 ms-4">
+								<p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+									{ fmt.Sprintf("Desde %02d:%02d", avail.Start.Hour(), avail.Start.Minute()) }
+								</p>
+								<p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+									{ fmt.Sprintf("Até %02d:%02d", avail.End.Hour(), avail.End.Minute()) }
+								</p>
+							</div>
+						</div>
+					</li>
+				}
+			</ul>
+		</div>
+	</div>
+}
